@@ -5,13 +5,14 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "UART3Loopback"
-#define VERSION ":V0.1"
+#define VERSION ":V0.2"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 
 int LED = 13;
 boolean LEDst = true;
+
 
 void setup() {
   pinMode(LED, OUTPUT);
@@ -25,12 +26,12 @@ void setup() {
 
 void loop() {
 
-//  while (Serial.available() > 0) {
-//    char a = Serial.read();
-//    Serial1.write(a); // First power supply
-//    Serial2.write(a); // Second power supply
-//    //Serial3.write(a);
-//  }
+  //  while (Serial.available() > 0) {
+  //    char a = Serial.read();
+  //    Serial1.write(a); // First power supply
+  //    Serial2.write(a); // Second power supply
+  //    //Serial3.write(a);
+  //  }
 
 }
 
@@ -40,6 +41,10 @@ void serialEvent() {
     char a = Serial.read();
     Serial1.write(a);
     ToggleLED();
+    if (a == '\n') {
+      Serial.print("Serial Terminal UART0 in at: ");
+      Serial.println(millis());
+    }
   }
 }
 
@@ -49,6 +54,10 @@ void serialEvent1() {
     char a = Serial1.read();
     Serial.write(a);
     ToggleLED();
+    if (a == '\n') {
+      Serial.print("Serial UART1 in at: ");
+      Serial.println(millis());
+    }
   }
 }
 
@@ -58,6 +67,10 @@ void serialEvent2() {
     char a = Serial1.read();
     Serial.write(a);
     ToggleLED();
+    if (a == '\n') {
+      Serial.print("Serial2 UART2 in at: ");
+      Serial.println(millis());
+    }
   }
 }
 
@@ -67,9 +80,13 @@ void serialEvent3() {
     char a = Serial3.read();
     Serial.write(a);
     ToggleLED();
+    if (a == '\n') {
+      Serial.print("Serial UART3 in at: ");
+      Serial.println(millis());
+    }
   }
 }
 
-void ToggleLED(){
+void ToggleLED() {
   digitalWrite(LED, LEDst = !LEDst);
 }
