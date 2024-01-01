@@ -1,11 +1,11 @@
-// UART3Loopback
+// EventUARTS-Due
 // Inspired by code here: https://arduino-er.blogspot.com/2015/04/arduino-due-muilt-serial-and-serialevent.html
 // Type stuff in the Serial Monitor (UART0) and it is forwared to UART1
 // All other UART input is forwared out the Serial Monitor (UART0)
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "UART3Loopback"
-#define VERSION ":V0.2"
+#define VERSION ":V0.3"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -13,6 +13,7 @@
 int LED = 13;
 boolean LEDst = true;
 
+#define SHUT_DOWN 49
 
 void setup() {
   pinMode(LED, OUTPUT);
@@ -21,6 +22,15 @@ void setup() {
   Serial1.begin(4800);
   Serial2.begin(4800);
   Serial3.begin(9600);
+
+  Serial.println("===================================");
+  Serial.print(DEVICE_UNDER_TEST);
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+
+  pinMode(SHUT_DOWN, INPUT_PULLUP);
   digitalWrite(LED, LOW);
 }
 
@@ -39,7 +49,13 @@ void loop() {
 void serialEvent() {
   while (Serial.available() > 0) {
     char a = Serial.read();
-    Serial1.write(a);
+
+    if (digitalRead(SHUT_DOWN) == LOW) {
+      Serial2.write(a);   //Stack supply 2 on J27
+    } else {
+      Serial1.write(a);   //Stack supply 1 on J10
+    }
+
     ToggleLED();
     if (a == '\n') {
       Serial.print("Serial Terminal UART0 in at: ");
@@ -63,8 +79,8 @@ void serialEvent1() {
 
 //UART2
 void serialEvent2() {
-  while (Serial1.available() > 0) {
-    char a = Serial1.read();
+  while (Serial2.available() > 0) {
+    char a = Serial2.read();
     Serial.write(a);
     ToggleLED();
     if (a == '\n') {
