@@ -5,7 +5,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "UART3Loopback"
-#define VERSION ":V0.3"
+#define VERSION ":V0.4"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -19,7 +19,9 @@ void setup() {
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH);
   Serial.begin(115200);
+  
   Serial1.begin(4800);
+  while (!Serial1);
   Serial2.begin(4800);
   Serial3.begin(9600);
 
@@ -30,9 +32,18 @@ void setup() {
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 
+  // Add a unique delimiter after initialization
+  Serial.println("=== INITIALIZATION COMPLETE ===");
+
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   digitalWrite(LED, LOW);
+
+  // Add a flush after reset
+  Serial1.flush();
+  Serial1.println();
 }
+
+
 
 void loop() {
 
